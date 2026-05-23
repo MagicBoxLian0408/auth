@@ -1,0 +1,14 @@
+package kr.magicbox.auth.adapter.in.kafka.event;
+
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
+
+import java.time.Instant;
+
+@Builder
+public record UserWithdrawnEvent(
+        @JsonProperty("event_id") Long eventId,
+        @JsonProperty("user_id") Long userId,
+        @JsonProperty("occurred_at") @JsonAlias("withdrawn_at") Instant occurredAt
+) implements InboxEvent {}
