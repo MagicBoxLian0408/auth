@@ -18,25 +18,29 @@ public class PropertiesConfiguration {
 
     @Bean
     @ConfigurationPropertiesBinding
-    public Converter<String, RSAPrivateKey> rsaPrivateKeyConverter() {
-        return new Converter<String, RSAPrivateKey>() {
-            @Override
-            public RSAPrivateKey convert(String source) {
-                return RsaKeyConverters.pkcs8().convert(
-                        new ByteArrayInputStream(source.getBytes(StandardCharsets.UTF_8)));
-            }
-        };
+    public RsaPrivateKeyConverter rsaPrivateKeyConverter() {
+        return new RsaPrivateKeyConverter();
     }
 
     @Bean
     @ConfigurationPropertiesBinding
-    public Converter<String, RSAPublicKey> rsaPublicKeyConverter() {
-        return new Converter<String, RSAPublicKey>() {
-            @Override
-            public RSAPublicKey convert(String source) {
-                return RsaKeyConverters.x509().convert(
-                        new ByteArrayInputStream(source.getBytes(StandardCharsets.UTF_8)));
-            }
-        };
+    public RsaPublicKeyConverter rsaPublicKeyConverter() {
+        return new RsaPublicKeyConverter();
+    }
+
+    static class RsaPrivateKeyConverter implements Converter<String, RSAPrivateKey> {
+        @Override
+        public RSAPrivateKey convert(String source) {
+            return RsaKeyConverters.pkcs8().convert(
+                    new ByteArrayInputStream(source.getBytes(StandardCharsets.UTF_8)));
+        }
+    }
+
+    static class RsaPublicKeyConverter implements Converter<String, RSAPublicKey> {
+        @Override
+        public RSAPublicKey convert(String source) {
+            return RsaKeyConverters.x509().convert(
+                    new ByteArrayInputStream(source.getBytes(StandardCharsets.UTF_8)));
+        }
     }
 }
