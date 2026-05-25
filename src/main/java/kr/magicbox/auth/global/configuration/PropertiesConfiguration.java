@@ -1,7 +1,7 @@
 package kr.magicbox.auth.global.configuration;
 
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
@@ -19,14 +19,24 @@ public class PropertiesConfiguration {
     @Bean
     @ConfigurationPropertiesBinding
     public Converter<String, RSAPrivateKey> rsaPrivateKeyConverter() {
-        return source -> RsaKeyConverters.pkcs8().convert(
-                new ByteArrayInputStream(source.getBytes(StandardCharsets.UTF_8)));
+        return new Converter<String, RSAPrivateKey>() {
+            @Override
+            public RSAPrivateKey convert(String source) {
+                return RsaKeyConverters.pkcs8().convert(
+                        new ByteArrayInputStream(source.getBytes(StandardCharsets.UTF_8)));
+            }
+        };
     }
 
     @Bean
     @ConfigurationPropertiesBinding
     public Converter<String, RSAPublicKey> rsaPublicKeyConverter() {
-        return source -> RsaKeyConverters.x509().convert(
-                new ByteArrayInputStream(source.getBytes(StandardCharsets.UTF_8)));
+        return new Converter<String, RSAPublicKey>() {
+            @Override
+            public RSAPublicKey convert(String source) {
+                return RsaKeyConverters.x509().convert(
+                        new ByteArrayInputStream(source.getBytes(StandardCharsets.UTF_8)));
+            }
+        };
     }
 }
