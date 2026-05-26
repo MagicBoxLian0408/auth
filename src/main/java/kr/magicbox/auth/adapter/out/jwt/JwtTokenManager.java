@@ -29,6 +29,7 @@ public class JwtTokenManager implements TokenManager {
         Date expiration = new Date(now.getTime() + jwtProperties.getAccessTokenExpiration());
 
         String accessTokenValueString = Jwts.builder()
+                .issuer(jwtProperties.getIssuer())
                 .subject(userId.value().toString())
                 .claim(JwtConstants.CLAIM_ROLE, role.name())
                 .issuedAt(now)
@@ -45,6 +46,7 @@ public class JwtTokenManager implements TokenManager {
         Date expiration = new Date(now.getTime() + jwtProperties.getRefreshTokenExpiration());
 
         String refreshTokenValueString = Jwts.builder()
+                .issuer(jwtProperties.getIssuer())
                 .subject(userId.value().toString())
                 .claim(JwtConstants.CLAIM_ROLE, role.name())
                 .issuedAt(now)
