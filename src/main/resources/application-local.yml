@@ -100,6 +100,7 @@ server:
   port: ${SERVER_PORT}
 
 jwt:
+  issuer: ${JWT_ISSUER}
   private-key: ${JWT_PRIVATE_KEY}
   public-key: ${JWT_PUBLIC_KEY}
   access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION}
