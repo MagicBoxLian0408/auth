@@ -4,7 +4,6 @@ import kr.magicbox.auth.adapter.in.security.filter.UserInfoExtractFilter;
 import kr.magicbox.auth.adapter.in.security.oauth2.MagicBoxOAuth2UserService;
 import kr.magicbox.auth.adapter.in.security.oauth2.OAuth2LoginFailureHandler;
 import kr.magicbox.auth.adapter.in.security.oauth2.OAuth2LoginSuccessHandler;
-import kr.magicbox.auth.adapter.in.security.properties.TrustedIpProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +19,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
-    private final TrustedIpProperties trustedIpProperties;
     private final MagicBoxOAuth2UserService magicBoxOAuth2UserService;
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
     private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
@@ -31,7 +29,7 @@ public class SecurityConfiguration {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(new UserInfoExtractFilter(trustedIpProperties), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new UserInfoExtractFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
                 .oauth2Login(oauth2 -> oauth2
                         .authorizationEndpoint(authorization -> authorization

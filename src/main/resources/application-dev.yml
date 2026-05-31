@@ -128,11 +128,6 @@ code:
 frontend:
   uri: ${FRONTEND_URL}
 
-security:
-  trusted:
-    ips:
-      - ${TRUSTED_IP_GATEWAY}
-
 logging:
   level:
     org.springframework.web: INFO
