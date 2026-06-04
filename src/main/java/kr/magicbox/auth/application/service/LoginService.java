@@ -63,8 +63,8 @@ public class LoginService implements LoginUseCase {
         boolean isDuplicate = userStatusPort.isActive(userId.value());
 
         AuthDomainEvent event = isDuplicate
-                ? DuplicateLoginEvent.builder().userId(userId).occurredAt(now).build()
-                : LoginEvent.builder().userId(userId).occurredAt(now).build();
+                ? DuplicateLoginEvent.builder().eventId(userId.value()).userId(userId).occurredAt(now).build()
+                : LoginEvent.builder().eventId(userId.value()).userId(userId).occurredAt(now).build();
         authOutboxPort.save(event);
     }
 
