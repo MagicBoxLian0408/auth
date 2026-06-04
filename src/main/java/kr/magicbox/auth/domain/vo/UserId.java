@@ -1,8 +1,9 @@
 package kr.magicbox.auth.domain.vo;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import kr.magicbox.auth.domain.exception.InvalidFieldException;
 
-public record UserId(Long value) {
+public record UserId(@JsonValue Long value) {
     
     public UserId {
         if (value == null || value <= 0) {

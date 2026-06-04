@@ -1,12 +1,17 @@
 package kr.magicbox.auth.domain.event;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import kr.magicbox.auth.domain.vo.UserId;
 import lombok.Builder;
 
 import java.time.Instant;
 
 @Builder
-public record DuplicateLoginEvent(UserId userId, Instant occurredAt) implements AuthDomainEvent {
+public record DuplicateLoginEvent(
+        @JsonProperty("event_id") Long eventId,
+        @JsonProperty("user_id") UserId userId,
+        @JsonProperty("occurred_at") Instant occurredAt
+) implements AuthDomainEvent {
 
     @Override
     public AuthDomainEventType eventType() {
