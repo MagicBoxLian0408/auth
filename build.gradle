@@ -72,3 +72,7 @@ protobuf {
         }
     }
 }
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
