@@ -93,9 +93,7 @@ spring:
           keep-alive-timeout: 5s
 
 jwt:
-  issuer: ${JWT_ISSUER}
-  private-key: ${JWT_PRIVATE_KEY}
-  public-key: ${JWT_PUBLIC_KEY}
+  secret: ${JWT_SECRET}
   access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION}
   refresh-token-expiration: ${REFRESH_TOKEN_EXPIRATION}
 
@@ -128,9 +126,10 @@ code:
 frontend:
   uri: ${FRONTEND_URL}
 
-logging:
-  level:
-    org.springframework.web: INFO
-    org.springframework.data.redis: INFO
+security:
+  trusted:
+    ips:
+      - ${TRUSTED_IP_GATEWAY}
+
 inbox:
   max-event-age-minutes: 5
