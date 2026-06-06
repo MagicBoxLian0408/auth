@@ -11,23 +11,16 @@ import kr.magicbox.auth.domain.vo.RefreshTokenValue;
 import kr.magicbox.auth.domain.vo.UserId;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
+import java.security.interfaces.RSAPublicKey;
 import java.util.Date;
 
 @Component
 public class JwtTokenManager implements TokenManager {
 
     private final JwtProperties jwtProperties;
-    private final SecretKey secretKey;
 
     public JwtTokenManager(JwtProperties jwtProperties) {
         this.jwtProperties = jwtProperties;
-        this.secretKey = new SecretKeySpec(
-                jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8),
-                Jwts.SIG.HS256.key().build().getAlgorithm()
-        );
     }
 
     @Override
@@ -36,11 +29,12 @@ public class JwtTokenManager implements TokenManager {
         Date expiration = new Date(now.getTime() + jwtProperties.getAccessTokenExpiration());
 
         String accessTokenValueString = Jwts.builder()
+                .issuer(jwtProperties.getIssuer())
                 .subject(userId.value().toString())
                 .claim(JwtConstants.CLAIM_ROLE, role.name())
                 .issuedAt(now)
                 .expiration(expiration)
-                .signWith(secretKey)
+                .signWith(jwtProperties.getPrivateKey())
                 .compact();
 
         return AccessTokenValue.of(accessTokenValueString);
@@ -52,11 +46,12 @@ public class JwtTokenManager implements TokenManager {
         Date expiration = new Date(now.getTime() + jwtProperties.getRefreshTokenExpiration());
 
         String refreshTokenValueString = Jwts.builder()
+                .issuer(jwtProperties.getIssuer())
                 .subject(userId.value().toString())
                 .claim(JwtConstants.CLAIM_ROLE, role.name())
                 .issuedAt(now)
                 .expiration(expiration)
-                .signWith(secretKey)
+                .signWith(jwtProperties.getPrivateKey())
                 .compact();
 
         return RefreshTokenValue.of(refreshTokenValueString);
@@ -65,7 +60,7 @@ public class JwtTokenManager implements TokenManager {
     @Override
     public UserId extractUserId(String token) {
         Claims claims = Jwts.parser()
-                .verifyWith(secretKey)
+                .verifyWith(jwtProperties.getPublicKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
@@ -82,12 +77,16 @@ public class JwtTokenManager implements TokenManager {
     @Override
     public UserRole extractRole(String token) {
         Claims claims = Jwts.parser()
-                .verifyWith(secretKey)
+                .verifyWith(jwtProperties.getPublicKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
 
         String role = claims.get(JwtConstants.CLAIM_ROLE, String.class);
         return UserRole.of(role);
+    }
+
+    public RSAPublicKey getPublicKey() {
+        return jwtProperties.getPublicKey();
     }
 }
