@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface AuthInboxRepository extends JpaRepository<AuthInboxEntity, Long> {
 
-    boolean existsByKafkaKey(String kafkaKey);
+    boolean existsByKey(String key);
 
     Optional<AuthInboxEntity> findByTopicAndPartitionAndOffset(String topic, Integer partition, Long offset);
 }
