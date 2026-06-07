@@ -100,7 +100,6 @@ server:
   port: ${SERVER_PORT}
 
 jwt:
-  issuer: ${JWT_ISSUER}
   private-key: ${JWT_PRIVATE_KEY}
   public-key: ${JWT_PUBLIC_KEY}
   access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION}
@@ -134,12 +133,6 @@ code:
 
 frontend:
   uri: ${FRONTEND_URL}
-
-security:
-  trusted:
-    ips:
-      - 127.0.0.1
-      - 0:0:0:0:0:0:0:1
 
 inbox:
   max-event-age-minutes: 5
