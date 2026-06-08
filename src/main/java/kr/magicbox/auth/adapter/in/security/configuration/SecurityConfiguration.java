@@ -4,12 +4,7 @@ import kr.magicbox.auth.adapter.in.security.filter.UserInfoExtractFilter;
 import kr.magicbox.auth.adapter.in.security.oauth2.MagicBoxOAuth2UserService;
 import kr.magicbox.auth.adapter.in.security.oauth2.OAuth2LoginFailureHandler;
 import kr.magicbox.auth.adapter.in.security.oauth2.OAuth2LoginSuccessHandler;
-import kr.magicbox.auth.adapter.in.security.oauth2.properties.CodeProperties;
-import kr.magicbox.auth.adapter.in.security.oauth2.properties.FrontendProperties;
-import kr.magicbox.auth.adapter.in.web.properties.CookieProperties;
-import kr.magicbox.auth.adapter.out.jwt.properties.JwtProperties;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,14 +16,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableConfigurationProperties({JwtProperties.class, CodeProperties.class, FrontendProperties.class, CookieProperties.class})
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
     private final MagicBoxOAuth2UserService magicBoxOAuth2UserService;
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
     private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
-
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -38,10 +31,6 @@ public class SecurityConfiguration {
                 .addFilterBefore(new UserInfoExtractFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
                 .oauth2Login(oauth2 -> oauth2
-                        .authorizationEndpoint(authorization -> authorization
-                                .baseUri("/oauth2/authorization"))
-                        .redirectionEndpoint(redirection -> redirection
-                                .baseUri("/oauth2/callback/*"))
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(magicBoxOAuth2UserService))
                         .successHandler(oAuth2LoginSuccessHandler)
