@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.concurrent.ExecutionException;
 
 @Service
 @RequiredArgsConstructor
@@ -25,16 +24,7 @@ public class LogoutService implements LogoutUseCase {
     public void logout(LogoutCommand command) {
         UserId userId = command.userId();
 
-        boolean isActive;
-        try {
-            isActive = userStatusPort.isActive(userId.value()).get();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e.getCause());
-        }
-        if (!isActive) {
+        if (!userStatusPort.isActive(userId.value()).join()) {
             throw new UserInactiveException();
         }
         refreshTokenRepositoryPort.deleteRefreshToken(userId);
