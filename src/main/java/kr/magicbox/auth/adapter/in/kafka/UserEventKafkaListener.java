@@ -3,6 +3,7 @@ package kr.magicbox.auth.adapter.in.kafka;
 import kr.magicbox.auth.adapter.in.kafka.annotation.Idempotent;
 import kr.magicbox.auth.adapter.in.kafka.event.UserBannedEvent;
 import kr.magicbox.auth.adapter.in.kafka.event.UserWithdrawnEvent;
+import kr.magicbox.auth.adapter.out.persistence.entity.AuthInboxEntity;
 import kr.magicbox.auth.adapter.out.persistence.repository.AuthInboxRepository;
 import kr.magicbox.auth.application.port.in.HandleUserBannedUseCase;
 import kr.magicbox.auth.application.port.in.HandleUserWithdrawnUseCase;
@@ -13,9 +14,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.DltHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.annotation.RetryableTopic;
-import org.springframework.kafka.retrytopic.DltStrategy;
 import org.springframework.stereotype.Component;
-import kr.magicbox.auth.global.exception.BusinessException;
 
 @Slf4j
 @Component
@@ -27,7 +26,7 @@ public class UserEventKafkaListener {
     private final AuthInboxRepository authInboxRepository;
 
     @Idempotent
-    @RetryableTopic(dltStrategy = DltStrategy.FAIL_ON_ERROR, dltTopicSuffix = "-dlt", exclude = {BusinessException.class})
+    @RetryableTopic
     @KafkaListener(topics = "outbox.event.user-withdrawn", groupId = "auth-service")
     public void handleUserWithdrawnEvent(ConsumerRecord<String, UserWithdrawnEvent> consumerRecord) {
         UserWithdrawnEvent event = consumerRecord.value();
@@ -35,7 +34,7 @@ public class UserEventKafkaListener {
     }
 
     @Idempotent
-    @RetryableTopic(dltStrategy = DltStrategy.FAIL_ON_ERROR, dltTopicSuffix = "-dlt", exclude = {BusinessException.class})
+    @RetryableTopic
     @KafkaListener(topics = "outbox.event.user-banned", groupId = "auth-service")
     public void handleUserBannedEvent(ConsumerRecord<String, UserBannedEvent> consumerRecord) {
         UserBannedEvent event = consumerRecord.value();
@@ -46,6 +45,6 @@ public class UserEventKafkaListener {
     public void handleDlt(ConsumerRecord<String, ?> consumerRecord) {
         log.error("[Inbox] DLT 전환. topic={}, partition={}, offset={}", consumerRecord.topic(), consumerRecord.partition(), consumerRecord.offset());
         authInboxRepository.findByTopicAndPartitionAndOffset(consumerRecord.topic(), consumerRecord.partition(), consumerRecord.offset())
-                .ifPresent(inbox -> inbox.markDeadLettered());
+                .ifPresent(AuthInboxEntity::markDeadLettered);
     }
 }
